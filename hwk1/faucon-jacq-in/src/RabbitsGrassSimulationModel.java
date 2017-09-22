@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.util.ArrayList;
+import java.lang.Thread;
 
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
@@ -120,6 +121,11 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					}
 				}				
 				displaySurf.updateDisplay();
+				try { 
+					Thread.sleep(100); 
+				}catch(Exception e) {
+					System.out.println("Exception caught");
+				}
 			}
 		}
 
