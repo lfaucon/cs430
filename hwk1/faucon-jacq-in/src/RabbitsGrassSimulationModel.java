@@ -31,12 +31,14 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private static final int WORLDXSIZE = 20;
 	private static final int WORLDYSIZE = 20;	
 	private static final int GRASSGROWTH = 20;
+	private static final int SLOWDOWN = 0;
 
 	private int numAgents = NUMRABBITS;
 	private int rabbitStomach = RABBITSTOMACH;
 	private int worldXSize = WORLDXSIZE;
 	private int worldYSize = WORLDYSIZE;
 	private int grassGrowth = GRASSGROWTH;
+	private int slowDown = SLOWDOWN;
 
 	private Schedule schedule;
 	private RabbitsGrassSimulationSpace rgSpace;
@@ -59,7 +61,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	public String[] getInitParam() {
-		String[] initParams = { "NumAgents", "RabbitStomach", "WorldXSize", "WorldYSize", "GrassGrowth"};
+		String[] initParams = { "NumAgents", "RabbitStomach", "WorldXSize", "WorldYSize", "GrassGrowth", "SlowDown"};
 		return initParams;
 	}
 
@@ -72,10 +74,10 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	public void setup() {
-		System.out.println("Running setup");
+		// System.out.println("Running setup");
 		rgSpace = null;
 		agentList = new ArrayList();
-		schedule = new Schedule(1);
+		schedule = new Schedule(1);		
 		if (displaySurf != null){
 			displaySurf.dispose();
 		}
@@ -122,7 +124,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				}				
 				displaySurf.updateDisplay();
 				try { 
-					Thread.sleep(100); 
+					Thread.sleep(slowDown); 
 				}catch(Exception e) {
 					System.out.println("Exception caught");
 				}
@@ -215,5 +217,13 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	public void setGrassGrowth(int i) {
 		grassGrowth = i;
+	}
+
+	public int getSlowDown() {
+		return slowDown;
+	}
+
+	public void setSlowDown(int i) {
+		slowDown = i;
 	}
 }
