@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.util.ArrayList;
 
+import uchicago.src.sim.analysis.OpenSequenceGraph;
+import uchicago.src.sim.analysis.Sequence;
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
@@ -41,7 +43,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private RabbitsGrassSimulationSpace rgSpace;
 	private DisplaySurface displaySurf;
 	private ArrayList<RabbitsGrassSimulationAgent> agentList;
-
+	private OpenSequenceGraph graph;
+	
 	public static void main(String[] args) {
 		System.out.println("Rabbits! Go!");
 		SimInit init = new SimInit();
@@ -53,6 +56,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		System.out.println("Running begin");
 		buildModel();
 		buildSchedule();
+		setGraph();
+		graph.display();
 		buildDisplay();
 		displaySurf.display();
 	}
@@ -120,6 +125,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					}
 				}				
 				displaySurf.updateDisplay();
+				graph.step();
 			}
 		}
 
@@ -168,6 +174,21 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			if(cda.getStomach() > 0) livingAgents++;
 		}
 		return livingAgents;
+	}
+
+	private void setGraph() {
+		graph = new OpenSequenceGraph("Agent Stats.", this);
+		graph.setXRange(0, 200);
+		graph.setYRange(0, 200);
+		graph.setAxisTitles("time", "agent attributes");
+		
+		Sequence sec = new Sequence() {
+			public double getSValue() {
+			    return countLivingAgents();
+			}
+		};
+		
+		graph.addSequence("pop", sec);
 	}
 
 

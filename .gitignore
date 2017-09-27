@@ -23,6 +23,10 @@ hs_err_pid*
 
 # mac file
 *.DS_Store
+<<<<<<< Updated upstream
 
 # eclipse
 *.classpath
+=======
+/.metadata/
+>>>>>>> Stashed changes
