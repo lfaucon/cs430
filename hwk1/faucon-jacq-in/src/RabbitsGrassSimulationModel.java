@@ -1,8 +1,7 @@
 import java.awt.Color;
 import java.util.ArrayList;
+import java.lang.Thread;
 
-import uchicago.src.sim.analysis.OpenSequenceGraph;
-import uchicago.src.sim.analysis.Sequence;
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
@@ -32,19 +31,21 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private static final int WORLDXSIZE = 20;
 	private static final int WORLDYSIZE = 20;	
 	private static final int GRASSGROWTH = 20;
+	private static final int SLOWDOWN = 0;
 
 	private int numAgents = NUMRABBITS;
 	private int rabbitStomach = RABBITSTOMACH;
 	private int worldXSize = WORLDXSIZE;
 	private int worldYSize = WORLDYSIZE;
 	private int grassGrowth = GRASSGROWTH;
+	private int slowDown = SLOWDOWN;
 
 	private Schedule schedule;
 	private RabbitsGrassSimulationSpace rgSpace;
 	private DisplaySurface displaySurf;
 	private ArrayList<RabbitsGrassSimulationAgent> agentList;
-	private OpenSequenceGraph graph;
-	
+        private OpenSequenceGraph graph;
+
 	public static void main(String[] args) {
 		System.out.println("Rabbits! Go!");
 		SimInit init = new SimInit();
@@ -55,15 +56,15 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	public void begin() {
 		System.out.println("Running begin");
 		buildModel();
+                setGraph();
 		buildSchedule();
-		setGraph();
-		graph.display();
+                graph.display();
 		buildDisplay();
 		displaySurf.display();
 	}
 
 	public String[] getInitParam() {
-		String[] initParams = { "NumAgents", "RabbitStomach", "WorldXSize", "WorldYSize", "GrassGrowth"};
+		String[] initParams = { "NumAgents", "RabbitStomach", "WorldXSize", "WorldYSize", "GrassGrowth", "SlowDown"};
 		return initParams;
 	}
 
@@ -76,10 +77,10 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	public void setup() {
-		System.out.println("Running setup");
+		// System.out.println("Running setup");
 		rgSpace = null;
 		agentList = new ArrayList();
-		schedule = new Schedule(1);
+		schedule = new Schedule(1);		
 		if (displaySurf != null){
 			displaySurf.dispose();
 		}
@@ -98,6 +99,21 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			RabbitsGrassSimulationAgent rga = (RabbitsGrassSimulationAgent)agentList.get(i);
 			rga.report();
 		}
+	}
+
+        private void setGraph() {
+		graph = new OpenSequenceGraph("Agent Stats.", this);
+		graph.setXRange(0, 200);
+		graph.setYRange(0, 200);
+		graph.setAxisTitles("time", "agent attributes");
+		
+		Sequence sec = new Sequence() {
+			public double getSValue() {
+			    return countLivingAgents();
+			}
+		};
+		
+		graph.addSequence("population", sec);
 	}
 
 	public void buildSchedule(){
@@ -125,7 +141,12 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					}
 				}				
 				displaySurf.updateDisplay();
-				graph.step();
+                                graph.step();
+				try { 
+					Thread.sleep(slowDown); 
+				}catch(Exception e) {
+					System.out.println("Exception caught");
+				}
 			}
 		}
 
@@ -176,21 +197,6 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		return livingAgents;
 	}
 
-	private void setGraph() {
-		graph = new OpenSequenceGraph("Agent Stats.", this);
-		graph.setXRange(0, 200);
-		graph.setYRange(0, 200);
-		graph.setAxisTitles("time", "agent attributes");
-		
-		Sequence sec = new Sequence() {
-			public double getSValue() {
-			    return countLivingAgents();
-			}
-		};
-		
-		graph.addSequence("pop", sec);
-	}
-
 
 	public int getNumAgents(){
 		return numAgents;
@@ -230,5 +236,13 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	public void setGrassGrowth(int i) {
 		grassGrowth = i;
+	}
+
+	public int getSlowDown() {
+		return slowDown;
+	}
+
+	public void setSlowDown(int i) {
+		slowDown = i;
 	}
 }
