@@ -2,6 +2,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.lang.Thread;
 
+import uchicago.src.sim.analysis.Sequence;
+import uchicago.src.sim.analysis.OpenSequenceGraph;
 import uchicago.src.sim.engine.BasicAction;
 import uchicago.src.sim.engine.Schedule;
 import uchicago.src.sim.engine.SimInit;
