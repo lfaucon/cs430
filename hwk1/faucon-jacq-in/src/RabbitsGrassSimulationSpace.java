@@ -9,6 +9,7 @@ public class RabbitsGrassSimulationSpace {
 
 	private Object2DGrid grassSpace;
 	private Object2DGrid agentSpace;
+	public int grassCount = 0;
 
 	public RabbitsGrassSimulationSpace(int xSize, int ySize){
 		grassSpace = new Object2DGrid(xSize, ySize);
@@ -22,6 +23,7 @@ public class RabbitsGrassSimulationSpace {
 	}
 
 	public void growGrass(int grass){
+		grassCount += grass;
 		// Randomly place grass in grassSpace
 		for(int i = 0; i < grass; i++){
 
@@ -87,6 +89,7 @@ public class RabbitsGrassSimulationSpace {
 
 	public int eatGrassAt(int x, int y){
 		int grass = getGrassAt(x, y);
+		grassCount -= grass;
 		grassSpace.putObjectAt(x, y, new Integer(0));
 		return grass;
 	}

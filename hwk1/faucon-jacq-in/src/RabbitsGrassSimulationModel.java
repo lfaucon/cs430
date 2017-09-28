@@ -46,7 +46,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private RabbitsGrassSimulationSpace rgSpace;
 	private DisplaySurface displaySurf;
 	private ArrayList<RabbitsGrassSimulationAgent> agentList;
-        private OpenSequenceGraph graph;
+	private OpenSequenceGraph graph;
 
 	public static void main(String[] args) {
 		System.out.println("Rabbits! Go!");
@@ -58,9 +58,9 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	public void begin() {
 		System.out.println("Running begin");
 		buildModel();
-                setGraph();
+		setGraphs();
 		buildSchedule();
-                graph.display();
+		graph.display();
 		buildDisplay();
 		displaySurf.display();
 	}
@@ -81,7 +81,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	public void setup() {
 		// System.out.println("Running setup");
 		rgSpace = null;
-		agentList = new ArrayList();
+		agentList = new ArrayList<RabbitsGrassSimulationAgent>();
 		schedule = new Schedule(1);		
 		if (displaySurf != null){
 			displaySurf.dispose();
@@ -103,23 +103,28 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		}
 	}
 
-        private void setGraph() {
-		graph = new OpenSequenceGraph("Agent Stats.", this);
-		graph.setXRange(0, 200);
-		graph.setYRange(0, 200);
-		graph.setAxisTitles("time", "agent attributes");
-		
-		Sequence sec = new Sequence() {
+	private void setGraphs() {
+		graph = new OpenSequenceGraph("Rabbits population", this);
+		graph.setYRange(0, 4);
+		graph.setXRange(0, 1000);
+		graph.setXViewPolicy(OpenSequenceGraph.SHOW_LAST);
+		graph.setAxisTitles("time", "measure");
+		Sequence rabbitSec = new Sequence() {
 			public double getSValue() {
-			    return countLivingAgents();
+				return (float)agentList.size() / grassGrowth;
 			}
 		};
-		
-		graph.addSequence("population", sec);
+		Sequence grassSec = new Sequence() {
+			public double getSValue() {
+				return (float)rgSpace.grassCount / worldXSize / worldYSize;
+			}
+		};
+		graph.addSequence("rabbits per growing grass", rabbitSec);
+		graph.addSequence("average grass per cell", grassSec);
 	}
 
 	public void buildSchedule(){
-		System.out.println("Running BuildSchedule");
+
 		class RabbitGrassStep extends BasicAction {
 			public void execute() {
 				SimUtilities.shuffle(agentList);
@@ -143,7 +148,6 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 					}
 				}				
 				displaySurf.updateDisplay();
-                                graph.step();
 				try { 
 					Thread.sleep(slowDown); 
 				}catch(Exception e) {
@@ -151,23 +155,18 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				}
 			}
 		}
-
 		schedule.scheduleActionBeginning(0, new RabbitGrassStep());
 
 		class RabbitGrassCountLiving extends BasicAction {
 			public void execute(){
-				countLivingAgents();
+				graph.step();
 			}
 		}
-
 		schedule.scheduleActionAtInterval(10, new RabbitGrassCountLiving());
 	}
 
 	public void buildDisplay(){
-		System.out.println("Running BuildDisplay");
-
 		ColorMap map = new ColorMap();
-
 		for(int i = 1; i<16; i++){
 			map.mapColor(i, new Color(0, (int)(i * 8 + 127), 0));
 		}
@@ -175,7 +174,6 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 		Value2DDisplay displayGrass = 
 				new Value2DDisplay(rgSpace.getCurrentGrassSpace(), map);
-
 
 		Object2DDisplay displayRabbits = new Object2DDisplay(rgSpace.getCurrentAgentSpace());
 		displayRabbits.setObjectList(agentList);
@@ -189,16 +187,6 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		boolean available = rgSpace.addAgent(a);
 		if (available) agentList.add(a);
 	}
-
-	private int countLivingAgents(){
-		int livingAgents = 0;
-		for(int i = 0; i < agentList.size(); i++){
-			RabbitsGrassSimulationAgent cda = (RabbitsGrassSimulationAgent)agentList.get(i);
-			if(cda.getStomach() > 0) livingAgents++;
-		}
-		return livingAgents;
-	}
-
 
 	public int getNumAgents(){
 		return numAgents;
