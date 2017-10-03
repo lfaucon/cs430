@@ -27,3 +27,8 @@ hs_err_pid*
 # eclipse
 *.classpath
 /.metadata/
+
+# Latex
+*.aux
+*.gz
+*.jpg

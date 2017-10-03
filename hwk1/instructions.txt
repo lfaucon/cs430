@@ -11,16 +11,16 @@ DONE
 DONE
 
 5.	Link the javadoc for the repast library which can be found on moodle (Repast javadoc).
-
+DONE
 
 6.	Write your code in RabbitsGrassSimulationAgent, RabbitsGrassSimulationModel and RabbitsGrassSimulationSpace (do not rename these files and do not put them into packages!).
-
+DONE
 
 7.	Run the simulation by running MainRabbit.java.
-
+DONE
 
 8.	Make sure that you fulfill the requirements for the solution given in the exercise description.
-
+DONE
 
 9.	Write documentation using the latex template and place it into the doc folder. The pdf should be named lastname1-lastname2-in.pdf.
 
