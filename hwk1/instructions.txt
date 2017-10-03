@@ -23,9 +23,10 @@ DONE
 DONE
 
 9.	Write documentation using the latex template and place it into the doc folder. The pdf should be named lastname1-lastname2-in.pdf.
-
+DONE
 
 10.	Create a runnable jar file and place it in the folder lastname1-lastname2-in.
-
+DONE
 
 11.	Zip the folder lastname1-lastname2-in (without the libraries) and submit it on moodle.
+DONE
