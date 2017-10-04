@@ -1,0 +1,125 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage[top=0.8in, bottom=0.8in, left=0.8in, right=0.8in]{geometry}
+\usepackage{graphicx}
+
+% Add other packages here %
+
+
+
+% Put your group number and names in the author field %
+\title{\bf Excercise 1.\\ Implementing a first Application in RePast: A Rabbits Grass Simulation.}
+\author{Group \textnumero 10: Louis Faucon, Alexis Jacq}
+
+\begin{document}
+\maketitle
+
+\section{Implementation}
+
+\subsection{Assumptions}
+% Describe the assumptions of your world model and implementation (e.g. is the grass amount bounded in each cell) %
+
+At each step a fixed number of pieces of grass grow on random cells, with the possibility to accumulate (without limit) several pieces of grass on each cell. When a rabbit is on a cell, he eats the all the grass of the cell.
+
+\subsection{Implementation Remarks}
+% Provide important details about your implementation, such as handling of boundary conditions %
+The parameters of our simulation are 
+\begin{verbatim}
+GrassGrowth = 20
+NumAgents = 20
+RabbitStomach = 20
+GrassGrowth = 20
+WorldXSize = 20
+WorldYSIze = 20
+\end{verbatim}
+
+
+We use the same parameter $t$ (\verb|RabbitStomach|) to decide how rabbits die and reproduce. 
+\begin{itemize}
+	\item Rabbits are born with between $t$ and $2*t$ energy
+	\item Rabbits lose 1 energy at each step
+	\item Rabbits gain 1 energy for each grass eaten
+	\item Rabbits die if they reach 0 energy
+	\item Rabbits make a baby if they have more than $2*t$ energy and lose $t$ energy
+\end{itemize}
+
+We implemented a slowdown parameter that allow to play the simulation slowly
+
+We implemented a visualisation of two measures: average grass per cell and rabbit per grass growth
+
+\section{Results}
+% In this section, you study and describe how different variables (e.g. birth threshold, grass growth rate etc.) or combinations of variables influence the results. Different experiments with diffrent settings are described below with your observations and analysis
+
+\subsection{Experiment 1}
+
+\subsubsection{Setting}
+\begin{verbatim}
+GrassGrowth = 20
+NumAgents = 20
+RabbitStomach = 20
+WorldXSize = 20
+WorldYSIze = 20
+\end{verbatim}
+\subsubsection{Observations}
+% Elaborate on the observed results %
+We observe the that the quantity of rabbits oscillates around the value 20 and that the quantity of grass has an opposite oscillation because, if less rabbit eat the grass, there is more room to grow. We remark that in our implementation a growth rate of $X$ can sustain a population of $X$.
+
+\subsection{Experiment 2}
+\subsubsection{Setting}
+\begin{verbatim}
+GrassGrowth = 20
+NumAgents = 1
+RabbitStomach = 1000
+WorldXSize = 20
+WorldYSIze = 20
+\end{verbatim}
+\subsubsection{Observations}
+% Elaborate on the observed results %
+In that case the population of rabbit is much more stable. It first grows to reach a population of 20 rabbits, then stays at his value (more or less).
+
+\subsection{Experiment 3}
+\subsubsection{Setting}
+\begin{verbatim}
+GrassGrowth = 40
+NumAgents = 100
+RabbitStomach = 5
+WorldXSize = 20
+WorldYSIze = 20
+\end{verbatim}
+\subsubsection{Observations}
+% Elaborate on the observed results %
+In that situation the population of rabbit is less stable and we observe bigger changes due to the easier reproduction and dying rates.
+
+\subsection{Experiment 4}
+\subsubsection{Setting}
+\begin{verbatim}
+GrassGrowth = 75
+NumAgents = 75
+RabbitStomach = 75
+WorldXSize = 10
+WorldYSIze = 10
+\end{verbatim}
+\subsubsection{Observations}
+% Elaborate on the observed results %
+The world is covered by rabbits, be careful where you walk!
+
+\subsection{Experiment 5}
+\subsubsection{Setting}
+\begin{verbatim}
+GrassGrowth = 1
+NumAgents = 2
+RabbitStomach = 1000
+WorldXSize = 3
+WorldYSIze = 3
+\end{verbatim}
+\subsubsection{Observations}
+% Elaborate on the observed results %
+Bella and Oreo were living a very happy life together. Unfortunately the world was not producing enough grass for both of them to live like this forever. After about 3000 steps Bella died of hunger and Oreo went on living alone and sad (nearly) forever.
+
+\vfill
+\center
+\includegraphics[width=0.7\linewidth]{rabbits}
+\vfill
+\end{document}
