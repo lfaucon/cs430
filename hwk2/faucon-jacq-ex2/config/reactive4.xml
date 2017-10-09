@@ -13,17 +13,10 @@
 	<agents import="config/agents.xml" />
 
 	<!-- define task distribution -->
-	<tasks number="200" rngSeed="3590420242192152424">
-		<!--
-			the probabilities, rewards and weight of tasks
-		-->
+	<tasks number="200" rngSeed="1234567891011121314">
 		<probability distribution="uniform" min="0.0" max="1.0" />
-		<reward distribution="constant" policy="short-distances" min="1000" max="9999" />
+		<reward distribution="constant" policy="short-distances" min="10" max="99999" />
 		<weight distribution="constant" value="3" />
-
-		<!--
-			the probability that there is no task in a city
-		-->
 		<no-task distribution="uniform" min="0.2" max="0.4" />
 	</tasks>
 

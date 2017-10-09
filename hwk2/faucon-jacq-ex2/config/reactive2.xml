@@ -14,18 +14,10 @@
 
 	<!-- define task distribution -->
 	<tasks number="10" rngSeed="3590420242192152424">
-		<!--
-			the probabilities, rewards and weight of tasks
-		-->
-		<reward distribution="constant" policy="short-distances" min="100" max="99999" />
+		<reward distribution="constant" policy="short-distances" min="1000" max="99999" />
 		<probability distribution="uniform" min="0.0" max="1.0" />
 		<weight distribution="uniform" min="10" max="30" />
-
-		<!--
-			the probability that there is no task in a city
-		-->
-		<no-task distribution="uniform" min="0.2" max="0.4" />
-
+		<no-task distribution="uniform" min="0.5" max="0.7" />
 	</tasks>
 
 	<!-- the companies and vehicles in the simulation -->

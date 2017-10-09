@@ -22,10 +22,16 @@
 		<set discount-factor="0.99"/>
 	</agent>
 
-	<agent name="reactive-.5">
+	<agent name="reactive-.75">
 		<set class-path="bin/"/>
 		<set class-name="template.ReactiveMDP"/>
-		<set discount-factor="0.5"/>
+		<set discount-factor="0.75"/>
+	</agent>
+
+	<agent name="reactive-.50">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveMDP"/>
+		<set discount-factor="0.50"/>
 	</agent>
 
 	<agent name="reactive-.25">
