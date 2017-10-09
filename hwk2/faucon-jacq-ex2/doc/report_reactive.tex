@@ -19,6 +19,8 @@
 \subsection{Representation Description}
 % describe how you design the state representation, the possible actions, the reward table and the probability transition table
 
+States correspond to the current city of the agent and the available task. We decided to represent them as a pair \verb|(cityFrom, cityTo)| where \verb|cityTo| is the city of delivery of the task and can be \verb|null| if there is no task available. From a state \verb|(cityFrom, cityTo)| possible actions are either to pickup the task or to move to a neighbour of \verb|cityFrom|. The reward for a pair a state $s$ and an action $a$ is the value of the delivery (if the action is a pickup) minus the costPerKm times the distance travelled.
+
 \subsection{Implementation Details}
 % describe the implementation details of the representations above and the implementation details of the reinforcement learning algorithm you implemented
 
