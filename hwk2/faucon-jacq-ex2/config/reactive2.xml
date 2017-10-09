@@ -5,32 +5,32 @@
 
 	<!-- load settings -->
 	<settings import="config/settings_default.xml" />
-	
+
 	<!-- load the topology from an external file -->
 	<topology import="config/topology/the_netherlands.xml" />
-	
+
 	<!-- load agents from an external file -->
 	<agents import="config/agents.xml" />
-	
+
 	<!-- define task distribution -->
-	<tasks number="10" rngSeed="-6897376051029796530">
+	<tasks number="10" rngSeed="3590420242192152424">
 		<!--
 			the probabilities, rewards and weight of tasks
 		-->
 		<reward distribution="constant" policy="short-distances" min="100" max="99999" />
 		<probability distribution="uniform" min="0.0" max="1.0" />
 		<weight distribution="uniform" min="10" max="30" />
-		
+
 		<!--
 			the probability that there is no task in a city
 		-->
 		<no-task distribution="uniform" min="0.2" max="0.4" />
 
 	</tasks>
-	
+
 	<!-- the companies and vehicles in the simulation -->
 	<companies>
-	
+
 		<company name="Company A">
 			<!-- the first vehicle (blue) -->
 			<vehicle name="Vehicle 1">
@@ -41,7 +41,7 @@
 				<set cost-per-km="5" />
 			</vehicle>
 		</company>
-		
+
 		<company name="Company B">
 			<!-- the second vehicle (red) -->
 			<vehicle name="Vehicle 2">
@@ -52,7 +52,7 @@
 				<set cost-per-km="5" />
 			</vehicle>
 		</company>
-				
+
 		<company name="Company C">
 			<!-- the third vehicle (green) -->
 			<vehicle name="Vehicle 3">
@@ -63,7 +63,7 @@
 				<set cost-per-km="5" />
 			</vehicle>
 		</company>
-		
+
 		<company name="Company D">
 			<!-- the fourth vehicle (yellow) -->
 			<vehicle name="Vehicle 4">
@@ -74,7 +74,7 @@
 				<set cost-per-km="5" />
 			</vehicle>
 		</company>
-		
+
 		<company name="Company E">
 			<!-- the fifth vehicle (magenta) -->
 			<vehicle name="Vehicle 5">
@@ -85,7 +85,7 @@
 				<set cost-per-km="5" />
 			</vehicle>
 		</company>
-		
+
 		<company name="Company F">
 			<!-- the sixth vehicle (cyan) -->
 			<vehicle name="Vehicle 6">
@@ -96,7 +96,7 @@
 				<set cost-per-km="5" />
 			</vehicle>
 		</company>
-		
+
 	</companies>
-	
+
 </configuration>

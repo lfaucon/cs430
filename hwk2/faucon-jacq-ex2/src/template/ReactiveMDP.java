@@ -112,7 +112,7 @@ public class ReactiveMDP implements ReactiveBehavior {
 
 		public void updateBestAction() {
 			double maxValue = 0.;
-			City maxAction = null;
+			City maxAction = (City) values.keySet().toArray()[0];
 			for(City a: values.keySet()){
 				double v = values.get(a);
 				if(v > maxValue){

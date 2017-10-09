@@ -27,7 +27,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		// If the property is not present it defaults to 0.95
 		Double discount = agent.readProperty("discount-factor", Double.class,
 				0.95);
-		
+				
 		this.random = new Random();
 		this.pPickup = discount;
 		this.numActions = 0;
