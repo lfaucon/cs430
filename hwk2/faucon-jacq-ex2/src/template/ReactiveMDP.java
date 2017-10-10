@@ -18,8 +18,10 @@ public class ReactiveMDP implements ReactiveBehavior {
 
 	private int numActions;
 	private Agent myAgent;
+	private float conv;
 
 	private HashMap<City, HashMap<City, State>> states;
+	
 
 	@Override
 	public void setup(Topology topology, TaskDistribution td, Agent agent) {
@@ -47,16 +49,24 @@ public class ReactiveMDP implements ReactiveBehavior {
 		}
 
 		for(int step=0; step<1000; step++){
-			System.out.println(step + "___" + discount);
-			for(HashMap<City, State> hm: states.values()){
-				for(State state: hm.values()){
-					state.updateValues(discount, topology.cities(), states, td);
+			//System.out.println(step + "___" + discount);
+			this.conv = 0;
+			for(HashMap<City, State> hm: states.values()){ // for cityfrom's hm of cityto
+				for(State state: hm.values()){ // for s : cityfrom,cityto
+					state.updateValues(discount, topology.cities(), states, td); //q(a,s) <- R(a,s) + gama sum_s' P(s'|a,s)*max_a'(q(a',s))
 				}
 			}
 			for(HashMap<City, State> hm: states.values()){
 				for(State state: hm.values()){
-					state.updateBestAction();
+					double oldbestvalue = state.bestValue;
+					state.updateBestAction(); // so we know max_a(q(a,s)) forall s
+					double newbestvalue = state.bestValue;
+					this.conv += (oldbestvalue - newbestvalue)*(oldbestvalue - newbestvalue);
 				}
+			}
+			System.out.println(step + "___" + discount + "conv = " + this.conv);
+			if(this.conv<1E-6) {
+				break;
 			}
 		}
 	}
@@ -67,9 +77,9 @@ public class ReactiveMDP implements ReactiveBehavior {
 		public City cityFrom;
 		public City cityTo;
 
-		// The computation of the expected value
+		// The computation of the expected value Q(a,s)
 		private HashMap<City,Double> values;
-		// the immediate reward for each action
+		// the immediate reward for each action R(a;s)
 		private HashMap<City,Double> rewards;
 
 		public double bestValue = 0.;
@@ -83,26 +93,27 @@ public class ReactiveMDP implements ReactiveBehavior {
 			// moving actions
 			for(City neighbor: cityFrom.neighbors()){
 				values.put(neighbor, 0.);
-				rewards.put(neighbor, - from.distanceTo(neighbor) * costPerKm);
+				rewards.put(neighbor, (- from.distanceTo(neighbor) * costPerKm)/100000.); 
 			}
 			// delivering action
 			if(cityTo != null){
 				values.put(to, 0.);
-				rewards.put(to, td.reward(from, to) - from.distanceTo(to) * costPerKm);
+				rewards.put(to, (td.reward(from, to) - from.distanceTo(to) * costPerKm)/100000.);
 			}
 		}
 
 		public void updateValues(double discount, List<City> cities, HashMap<City, HashMap<City, State>> states, TaskDistribution td){
 			// For each action (corresponding to a new city)
-			for(City newCity: values.keySet()){
+			for(City newCity: values.keySet()){// for action : newcity
 				// initialize the value with the immediate reward
 				double newValue = rewards.get(newCity);
 
 				double noTaskProbability = 1.;
-				for(City cityTo: cities){
+				for(City cityTo: cities){// for all s' : cityfrom==newcity,cityto
 					newValue += discount * td.probability(newCity,cityTo) * states.get(newCity).get(cityTo).bestValue;
 					noTaskProbability -= td.probability(newCity,cityTo);
 				}
+				// s' : cityfrom==newcity,notask
 				newValue += discount * noTaskProbability * states.get(newCity).get(null).bestValue;
 
 				// updates value table
@@ -111,12 +122,12 @@ public class ReactiveMDP implements ReactiveBehavior {
 		}
 
 		public void updateBestAction() {
-			double maxValue = 0.;
+			double maxValue = -100000.;
 			City maxAction = (City) values.keySet().toArray()[0];
-			for(City a: values.keySet()){
-				double v = values.get(a);
-				if(v > maxValue){
-					maxValue = v;
+			for(City a: values.keySet()){ // for action newcity
+				double q = values.get(a); // q(s,a)
+				if(q > maxValue){
+					maxValue = q;
 					maxAction = a;
 				}
 			}
