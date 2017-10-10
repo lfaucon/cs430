@@ -3,6 +3,9 @@
 \usepackage{amsmath}
 \usepackage{textcomp}
 \usepackage[top=0.8in, bottom=0.8in, left=0.8in, right=0.8in]{geometry}
+\DeclareMathOperator*{\argmax}{argmax}
+\usepackage[]{algorithm2e}
+\SetArgSty{textnormal}
 % add other packages here
 
 % put your group number and names in the author field
@@ -19,10 +22,51 @@
 \subsection{Representation Description}
 % describe how you design the state representation, the possible actions, the reward table and the probability transition table
 
-States correspond to the current city of the agent and the available task. We decided to represent them as a pair \verb|(cityFrom, cityTo)| where \verb|cityTo| is the city of delivery of the task and can be \verb|null| if there is no task available. From a state \verb|(cityFrom, cityTo)| possible actions are either to pickup the task or to move to a neighbour of \verb|cityFrom|. The reward for a pair a state $s$ and an action $a$ is the value of the delivery (if the action is a pickup) minus the costPerKm times the distance travelled.
+States correspond to the current city of the agent and the available task. We decided to represent them as a pair \verb|(cityFrom, cityTo)| where \verb|cityTo| is the city of delivery of the task and can be \verb|null| if there is no task available. From a state \verb|(cityFrom, cityTo)|, possible actions are either to pickup -- if \verb|cityTo| is not \verb|null| -- the task (going to \verb|cityTo|) or -- in any case -- to move to a neighbor of \verb|cityFrom|. The reward $R(s,a)$ for a pair [state $s$; action $a$] is the value of the delivery (if the action is a pickup otherwise 0) minus the \verb|costPerKm| times the distance traveled.
 
 \subsection{Implementation Details}
 % describe the implementation details of the representations above and the implementation details of the reinforcement learning algorithm you implemented
+\subsubsection{Representations}
+The set of possible states is implemented as an hash map of hash maps:
+\begin{verbatim}
+states = new HashMap<City, HashMap<City, State>>();
+\end{verbatim}
+To each city \verb|cityFrom| is associated an hash map \verb|hm| that associates each possible task \verb|cityTo| available in \verb|cityFrom| and the \verb|null| task with an object \verb|State|.\\
+\\
+An object \verb|State| contains 6 parameters:\\
+- \verb|City cityFrom|: \small{\textit{city where is the car}}\\
+- \verb|City cityTo|: \small{\textit{city where is the car}}\\
+- \verb|HashMap<City,Double> values|: \small{\textit{associating possible actions (neighboring cities + cityTo) with Q-values}}\\
+- \verb|HashMap<City,Double> rewards|: \small{\textit{associating possible actions (neighboring cities + cityTo) with rewards}}\\
+- \verb|double bestValue|: \small{\textit{value $V(s) = \max_a Q(s,a)$}}\\
+- \verb|City bestAction|: \small{\textit{policy $\pi(s) = \argmax_a Q(s,a)$}}\\
+\\
+While setting up the reactive agent's class \verb|ReactiveMDP|, we fill the hash map of states \verb|States| with created object states for each possible pair \verb|(cityFrom, cityTo)|, and we also initialize Q-values and rewards for each state by looping over possible actions (neighboring cities + \verb|cityTo| if not \verb|null|).
+
+\subsubsection{Value Iterations}
+Then, the value of each \verb|State| $s$ contained in the hashmap \verb|states| is updated with a value iteration step:\\
+
+\RestyleAlgo{boxruled}
+\begin{algorithm}[h]
+    $\text{oldValue} = V(s)$\\
+	\For{\textit{action} $a$ in State $s$}{
+        $\text{newCityFrom} \leftarrow a$\\
+		$Q(s,a)\leftarrow R(s,a)$\\
+        \For{$\textit{each city} \text{ newCityTo}$}{
+            $s' \leftarrow \text{[newCityFrom ; newCityTo]}$\\
+            $Q(s,a) \leftarrow Q(s,a) + \gamma \mathcal{P}\left[\textit{task from }\text{newCityFrom }\textit{to }\text{newCityTo}\right] V(s')$ 
+        }
+        $Q(s,a) \leftarrow Q(s,a) + \gamma \mathcal{P}\left[\textit{no task from }\text{newCityFrom}\right] V(s')$\\
+	}
+    $V(s) = \max_a Q(s,a)$\\
+    $\pi(s) = \argmax_a Q(s,a)$\\
+    $\delta(s) = \left( \text{oldValue} - V(s) \right)^2$
+	\caption{\textbf{Value iterations for state $s$}.}
+	\label{algo}
+\end{algorithm}
+
+\newpage
+When value iterations converge to fixed point $V*$ (when $\sum_s \delta(s) < 1e^{-6}$), we stop value iterations and we launch the MDP with computed policies $\pi(s) \forall s$.
 
 \section{Results}
 % in this section, you describe several results from the experiments with your reactive agent

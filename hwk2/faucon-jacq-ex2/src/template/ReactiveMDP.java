@@ -93,12 +93,12 @@ public class ReactiveMDP implements ReactiveBehavior {
 			// moving actions
 			for(City neighbor: cityFrom.neighbors()){
 				values.put(neighbor, 0.);
-				rewards.put(neighbor, (- from.distanceTo(neighbor) * costPerKm)/100000.); 
+				rewards.put(neighbor, (- from.distanceTo(neighbor) * costPerKm)); 
 			}
 			// delivering action
 			if(cityTo != null){
 				values.put(to, 0.);
-				rewards.put(to, (td.reward(from, to) - from.distanceTo(to) * costPerKm)/100000.);
+				rewards.put(to, (td.reward(from, to) - from.distanceTo(to) * costPerKm));
 			}
 		}
 
