@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<agents>
+	<!-- Best agent -->
+
+	<agent name="reactive-rla">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveMDP"/>
+		<set discount-factor="0.99"/>
+	</agent>
+
+	<!-- #### REACTIVE AGENTS ### -->
+	<agent name="reactive-alwaysPickUp">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveTemplate"/>
+		<set discount-factor="1."/>
+	</agent>
+
+	<agent name="reactive-random">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveTemplate"/>
+		<set discount-factor=".5"/>
+	</agent>
+
+	<agent name="reactive-.99">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveMDP"/>
+		<set discount-factor="0.99"/>
+	</agent>
+
+	<agent name="reactive-.75">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveMDP"/>
+		<set discount-factor="0.75"/>
+	</agent>
+
+	<agent name="reactive-.50">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveMDP"/>
+		<set discount-factor="0.50"/>
+	</agent>
+
+	<agent name="reactive-.25">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveMDP"/>
+		<set discount-factor="0.25"/>
+	</agent>
+
+	<agent name="reactive-.01">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveMDP"/>
+		<set discount-factor="0.01"/>
+	</agent>
+
+</agents>
