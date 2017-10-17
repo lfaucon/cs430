@@ -63,50 +63,49 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 			this.cost = 0.;
 			this.weight = 0.;
 		}
-
+		
 		@Override
 		public int compareTo(Object otherState) {
 			if(this.cost>((State)otherState).cost) {
-				return -1;
-			} else {
 				return 1;
+			} else {
+				return -1;
 			}
 		}
 	}
 	
-	public State getNewState(State previous, City moveTo, Task pickup, Task deliver) {
+	public State getNewState(State previous, Task pickup, Task deliver) {
 		State newState = new State(previous.currentCity);
+		newState.cost += previous.cost;
+		newState.weight += previous.weight;
 		for(Task task : previous.restTasks) {
 			newState.restTasks.add(task);
 		}
 		for(Task task : previous.currentTasks) {
 			newState.currentTasks.add(task);
 		}
-		if(moveTo != null) {
-			//System.out.println("moveto !");
-			newState.currentCity = moveTo;
-			newState.cost = previous.cost + previous.currentCity.distanceTo(moveTo) * this.costPerKm;
-		}
 		if(pickup != null) {
 			System.out.println("pickup from "+pickup.pickupCity+" to "+pickup.deliveryCity);
+			newState.cost += previous.currentCity.distanceTo(pickup.pickupCity) * this.costPerKm;
+			newState.currentCity = pickup.pickupCity;
 			newState.restTasks.remove(pickup);
 			newState.currentTasks.add(pickup);
 			newState.weight = previous.weight + pickup.weight;
 		}
 		if(deliver != null) {
-			System.out.println("deliver !");
+			System.out.println("deliver task at "+deliver.deliveryCity);
+			newState.cost += previous.currentCity.distanceTo(deliver.deliveryCity) * this.costPerKm;
+			newState.currentCity = deliver.deliveryCity;
 			newState.currentTasks.remove(deliver);
 		}
 		return newState;
 	}
 	
 	public class Action {
-		City moveTo;
 		Task pickup;
 		Task deliver;
 		
-		public Action(City moveTo, Task pickup, Task deliver) {
-			this.moveTo = moveTo;
+		public Action(Task pickup, Task deliver) {
 			this.pickup = pickup;
 			this.deliver = deliver;
 		}
@@ -146,82 +145,94 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 		HashMap<State,Action> fatherAction = new HashMap<State,Action>();
 		fatherAction.put(state, null);
 		boolean goalReached = false;
+		State finalOptimalState;
+		Double finalOptimalCost = 1E10;
 		
-		for(int step=0; step<100000; step++) { // no while() but long for() with break condition
+		for(int step=0; step<1000000; step++) { // no while() but long for() with break condition
 			if(Q.isEmpty()) {
-				break; // should never append
+				System.out.println("empty tree after "+step+" iterations");
+				break;
 			}
 			state = Q.poll();
 			
 			if(state.restTasks.isEmpty() && state.currentTasks.isEmpty()) {
-				// first goal reached!
+				// new goal reached!
 				goalReached = true;
-				break; // should be "continue" because nothing guarantees that the first has the bes cost
-				// should stop when a goal is reached and all other nodes in the queue has costs bigger or equals.
-			}
-			boolean delivers = false;
-			
-			for(Task task : state.currentTasks) {
-				System.out.println("I got task to "+task.deliveryCity);
-				if(task.deliveryCity==state.currentCity) {
-					State newState = getNewState(state, null, null, task);
-					Q.offer(newState);
-					fatherState.put(newState, state);
-					fatherAction.put(newState, new Action(null, null, task));
-					delivers = true; // just explore this case, rest is idiot
-					break;
+				if(state.cost<finalOptimalCost) {
+					finalOptimalState = state;
+					finalOptimalCost = state.cost;
 				}
+				//continue;
+				break;
 			}
 			
-			if(!delivers) {
-				for(Task task : state.restTasks) {
-					if(task.pickupCity==state.currentCity) {
-						if(this.capacity >= state.weight+task.weight) {
-							State newState = getNewState(state, null, task, null);
-							Q.offer(newState);
-							fatherState.put(newState, state);
-							fatherAction.put(newState, new Action(null, task, null));
+			boolean delivers_closer = false;
+			for(Task pickup : state.restTasks) {// probably easy to optimize this double loop:
+				for(City city : state.currentCity.pathTo(pickup.pickupCity)) {
+					for(Task deliverCloser : state.currentTasks) {
+						if(city==deliverCloser.deliveryCity) {
+							delivers_closer = true; // passing a city where we can deliver is idiot
+							break;
 						}
 					}
 				}
-				// must avoid city already visited if no new pickup before last visit
-				// otherwise infinite loop
-				for(City neighbor : state.currentCity.neighbors()) {
-					State newState = getNewState(state, neighbor, null, null);
+				if(!delivers_closer) {
+					if(this.capacity>state.weight+pickup.weight) {
+						State newState = getNewState(state, pickup, null);
+						Q.offer(newState);
+						fatherState.put(newState, state);
+						fatherAction.put(newState, new Action(pickup, null));
+					}
+				}
+			}
+			
+			delivers_closer = false; 
+			for(Task deliver : state.currentTasks) {// probably easy to optimize this double loop:
+				for(City city : state.currentCity.pathTo(deliver.deliveryCity)) {
+					for(Task deliverCloser : state.currentTasks) {
+						if(city==deliverCloser.deliveryCity && city!=deliver.deliveryCity) {
+							delivers_closer = true; // passing a city where we can deliver is idiot
+							break;
+						}
+					}
+				}
+				if(!delivers_closer) {
+					State newState = getNewState(state, null, deliver);
 					Q.offer(newState);
 					fatherState.put(newState, state);
-					fatherAction.put(newState, new Action(neighbor, null, null));
+					fatherAction.put(newState, new Action(null, deliver));
 				}
 			}
 		}
 		if(!goalReached) {
 			System.out.println("nique sa mere, on n'a pas trouve de goal");
-			for(Task task : state.restTasks) {
-				System.out.println("rest task in "+task.pickupCity);
-			}
-			for(Task task : state.currentTasks) {
-				System.out.println("current tasks to "+task.pickupCity);
-			}
-			
 		} else {
-			System.out.println("goal trouve, planification...");
+			System.out.println("goal found with cost "+state.cost+" planification...");
 			Stack<Action> reversePlan = new Stack<Action>();
-			State father = fatherState.get(state);
-			while(father != null) {
-				Action action = fatherAction.get(state);
-				reversePlan.push(action);
-				state = father;
+			int i = 0;
+			while(state != null) {
+				if(fatherState.get(state)!=null) {
+					System.out.println("state city "+state.currentCity+" father state "+fatherState.get(state).currentCity);
+					Action action = fatherAction.get(state);
+					reversePlan.push(action);
+				}
+				state = fatherState.get(state);
 			}
 			while(!reversePlan.empty()) {
 				Action action = reversePlan.pop();
-				if(action.moveTo!=null) {
-					plan.appendMove(action.moveTo);
-				}
 				if(action.pickup!=null) {
+					System.out.println("action pickup "+action.pickup.pickupCity);
+					for (City city : currentCity.pathTo(action.pickup.pickupCity))
+						plan.appendMove(city);
 					plan.appendPickup(action.pickup);
+					currentCity = action.pickup.pickupCity;
 				}
 				if(action.deliver!=null) {
+					System.out.println("action deliver "+action.deliver.deliveryCity);
+					for (City city : currentCity.pathTo(action.deliver.deliveryCity))
+						plan.appendMove(city);
 					plan.appendDelivery(action.deliver);
+					currentCity = action.deliver.deliveryCity;
 				}
 			}
 		}
@@ -232,6 +243,7 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 		// tasks = set of (pickupcity;deliverycity)
 		City current = vehicle.getCurrentCity();
 		Plan plan = new Plan(current);
+		Double cost = 0.;
 
 		for (Task task : tasks) {
 			// move: current city => pickup location
@@ -239,16 +251,19 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 				plan.appendMove(city);
 
 			plan.appendPickup(task);
+			cost += current.distanceTo(task.pickupCity) * this.costPerKm;
 
 			// move: pickup location => delivery location
 			for (City city : task.path())
 				plan.appendMove(city);
 
 			plan.appendDelivery(task);
+			cost += task.pickupCity.distanceTo(task.deliveryCity) * this.costPerKm;
 
 			// set current city
 			current = task.deliveryCity;
 		}
+		System.out.println("found plan with cost "+cost);
 		return plan;
 	}
 
