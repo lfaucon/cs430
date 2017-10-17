@@ -145,24 +145,18 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 		HashMap<State,Action> fatherAction = new HashMap<State,Action>();
 		fatherAction.put(state, null);
 		boolean goalReached = false;
-		State finalOptimalState;
-		Double finalOptimalCost = 1E10;
 		
 		for(int step=0; step<1000000; step++) { // no while() but long for() with break condition
 			if(Q.isEmpty()) {
 				System.out.println("empty tree after "+step+" iterations");
 				break;
 			}
-			state = Q.poll();
 			
+			state = Q.poll();
 			if(state.restTasks.isEmpty() && state.currentTasks.isEmpty()) {
-				// new goal reached!
+				// first goal reached necessarily the one with optimal cost
+				System.out.println("goal found after "+step+" iterations");
 				goalReached = true;
-				if(state.cost<finalOptimalCost) {
-					finalOptimalState = state;
-					finalOptimalCost = state.cost;
-				}
-				//continue;
 				break;
 			}
 			
