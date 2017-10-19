@@ -19,7 +19,7 @@
 	<agent name="deliberative-qfs">
 		<set class-path="bin/"/>
 		<set class-name="template.DeliberativeTemplate"/>
-		<set algorithm="BFS"/>
+		<set algorithm="QFS"/>
 	</agent>
 
 	<agent name="deliberative-astar">

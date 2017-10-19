@@ -90,7 +90,7 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 			plan = ASTAR.getPlan(vehicle, tasks);
 			break;
 		case NAIVE:
-			plan = BFS.getPlan(vehicle, tasks);
+			plan = NAIVE.getPlan(vehicle, tasks);
 			break;
 		default:
 			throw new AssertionError("Should not happen.");
