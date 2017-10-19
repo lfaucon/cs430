@@ -8,13 +8,13 @@ import logist.plan.Plan;
 
 public class NAIVE {
 
-	public static Plan getPlan(Vehicle vehicle, TaskSet tasks) {
+	public static Plan getPlan(Vehicle vehicle, Iterable<Task> tasks) {
 		// tasks = set of (pickupcity;deliverycity)
 		City current = vehicle.getCurrentCity();
 		Plan plan = new Plan(current);
 		Double cost = 0.;
 
-		for (Task task : tasks) {
+		for (Task task: tasks) {
 			// move: current city => pickup location
 			for (City city : current.pathTo(task.pickupCity))
 				plan.appendMove(city);
