@@ -45,6 +45,7 @@ public class State implements Comparable<Object>{
 		int hash = 1;
 		hash = hash * 17 + restTasks.hashCode();
 		hash = hash * 31 + currentTasks.hashCode();
+		hash = hash * 13 + currentCity.hashCode();
 		return(hash);
 	}
 }

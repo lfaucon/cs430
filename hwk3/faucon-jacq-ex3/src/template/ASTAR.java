@@ -143,6 +143,8 @@ public class ASTAR {
 				H.put(newState, newState.cost);
 				fatherState.put(newState, state);
 				fatherAction.put(newState, action);
+				Q.remove(newState);
+				Q.add(newState);
 			}	
 		} else {
 			Q.offer(newState);
