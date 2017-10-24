@@ -136,7 +136,17 @@ public class ASTAR {
 	
 	private static double h(State state, Vehicle vehicle) {
 		System.out.println("################################\nCOMPUTING h for "+state.restTasks.size()+" remaining tasks");
-		int nIter = (int) Math.min(Math.pow(10,state.restTasks.size()), 100);
+		
+		// Computes h as the distance to the minumum furthest city
+		double h = -1.;
+		for(Task task: state.restTasks) {
+			if(h < state.currentCity.distanceTo(task.deliveryCity)){
+				h = state.currentCity.distanceTo(task.deliveryCity);
+			}
+		}
+		
+		// Computes h as the minimum of several random trials
+		/*int nIter = (int) Math.min(Math.pow(5,state.restTasks.size()), 100);
 		double h = -1;
 		
 		for (int iter = 0; iter < nIter; iter++) {
@@ -147,8 +157,8 @@ public class ASTAR {
 			if(h < 0 | h > plan.totalDistance()){
 				h = plan.totalDistance();
 			}
-		}
-		System.out.println("H "+h);
+		}*/
+		System.out.println("H " + h);
 		return h;
 	}
 }

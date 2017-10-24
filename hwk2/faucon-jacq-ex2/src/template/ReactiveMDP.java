@@ -48,7 +48,7 @@ public class ReactiveMDP implements ReactiveBehavior {
 			}
 		}
 
-		for(int step=0; step<1000; step++){
+		for(int step=0; step<100000; step++){
 			//System.out.println(step + "___" + discount);
 			this.conv = 0;
 			for(HashMap<City, State> hm: states.values()){ // for cityfrom's hm of cityto

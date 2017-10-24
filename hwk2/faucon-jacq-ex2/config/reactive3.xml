@@ -13,9 +13,9 @@
 	<agents import="config/agents.xml" />
 
 	<!-- define task distribution -->
-	<tasks number="200" rngSeed="3590420242192152424">
+	<tasks number="200" rngSeed="123456">
 		<probability distribution="uniform" min="0.0" max="1.0" />
-		<reward distribution="constant" policy="long-distances" min="1000" max="99999" />
+		<reward distribution="constant" policy="short-distances" min="1000" max="99999" />
 		<weight distribution="constant" value="3" />
 		<no-task distribution="uniform" min="0.2" max="0.4" />
 	</tasks>

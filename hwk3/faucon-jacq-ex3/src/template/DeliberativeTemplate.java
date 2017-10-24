@@ -30,7 +30,8 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 
 	/* the planning class */
 	Algorithm algorithm;
-
+	String algorithmName;
+	
 	@Override
 	public void setup(Topology topology, TaskDistribution td, Agent agent) {
 		this.topology = topology;
@@ -39,7 +40,7 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 
 		// initialize the planner
 		this.capacity = agent.vehicles().get(0).capacity();
-		String algorithmName = agent.readProperty("algorithm", String.class, "ASTAR");
+		this.algorithmName = agent.readProperty("algorithm", String.class, "ASTAR");
 
 		// Throws IllegalArgumentException if algorithm is unknown
 		algorithm = Algorithm.valueOf(algorithmName.toUpperCase());
@@ -104,7 +105,7 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 		}
 
 		System.out.println("###################################"+
-				"\nWITH ALGORITHM "+algorithm+
+				"\nWITH ALGORITHM "+algorithmName+
 				"\nTOTAL DISTANCE: "+plan.totalDistance()+
 				"\n###################################"
 				);
