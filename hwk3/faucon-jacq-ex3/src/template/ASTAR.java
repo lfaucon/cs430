@@ -163,7 +163,8 @@ public class ASTAR {
 		}
 		
 		// Computes h as the minimum of several random trials
-		/*int nIter = (int) Math.min(Math.pow(5,state.restTasks.size()), 100);
+		/*
+		int nIter = (int) Math.min(Math.pow(5,state.restTasks.size()), 100);
 		double h = -1;
 		
 		for (int iter = 0; iter < nIter; iter++) {
@@ -174,7 +175,9 @@ public class ASTAR {
 			if(h < 0 | h > plan.totalDistance()){
 				h = plan.totalDistance();
 			}
-		}*/
+		}
+		h *= 0.8
+		// */
 		//System.out.println("H " + h);
 		return h;
 	}

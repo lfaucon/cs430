@@ -26,10 +26,11 @@ One state is represented by:
 \item \verb|currentCity| the current city of the vehicle
 \item \verb|remainingTasks| the remaining tasks to pickup
 \item \verb|currentTasks| the tasks currently carried by the vehicle 
+\end{itemize}
 
 \subsection{Goal State}
 % Describe the goal state %
-The goal state is the state for which  \verb|remainingTasks| and \verb|currentTasks| are empty
+The goal state are the states for which  \verb|remainingTasks| and \verb|currentTasks| are empty
 
 \subsection{Actions}
 % Describe the possible actions/transitions in your model %
@@ -43,13 +44,13 @@ We implement BFS using a linked list. We decided to keep track of nodes of the t
 
 \subsection{A*}
 % Details of the A* implementation %
-WE implement \verb|A*| using a priority queue, first with the heuristic function $h(x) = 0$, then with two other heuristic functions detailed bellow.
+We implement \verb|A*| using a priority queue, first with the heuristic function $h(x) = 0$, then with two other heuristic functions detailed bellow.
 
 \subsection{Heuristic Function}
 % Details of the heuristic functions: main idea, optimality, admissibility %
 \begin{itemize}
-\item
-\item
+\item $h$ is the minimum of the distance of several randomly picked path, multiplied by a discount. This one is not guaranteed to be admissible and optimal.
+\item $h$ is the maximum over all remaining packages of the distance to pickup and deliver this package. this heuristic is admissible and optimal.
 \end{itemize}
 
 \section{Results}
@@ -60,18 +61,21 @@ WE implement \verb|A*| using a priority queue, first with the heuristic function
 
 \subsubsection{Setting}
 % Describe the settings of your experiment: topology, task configuration, etc. %
+We use the topology \verb|config/topology/switzerland.xml|. And the second heuristic for ASTAR.
 
 \subsubsection{Observations}
 % Describe the experimental results and the conclusions you inferred from these results %
-
+Our implementation of ASTAR can compute an optimal solution in less than one minute for 7 tasks, but BFS can do it only for 6 tasks. They both give optimal results.
 
 \subsection{Experiment 2: Multi-agent Experiments}
 % Observations in multi-agent experiments %
 
 \subsubsection{Setting}
 % Describe the settings of your experiment: topology, task configuration, etc. %
+We ran two ASTAR agents on the topology \verb|config/topology/switzerland.xml|.
 
 \subsubsection{Observations}
 % Describe the experimental results and the conclusions you inferred from these results %
+We observe that the agents have several conflicts and even though they achieve the whole delivery in less time, they do not have an optimal collaboration.
 
 \end{document}
