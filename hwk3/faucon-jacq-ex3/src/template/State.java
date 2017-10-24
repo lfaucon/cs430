@@ -36,7 +36,8 @@ public class State implements Comparable<Object>{
 		boolean b = restTasks.containsAll(((State) otherState).currentTasks);
 		boolean c = ((State) otherState).restTasks.containsAll(restTasks);
 		boolean d = ((State) otherState).restTasks.containsAll(restTasks);
-		return(a && b && c && d);
+		boolean e = ((State) otherState).currentCity.equals(currentCity);
+		return(a && b && c && d && e);
 	}
 	
 	@Override
