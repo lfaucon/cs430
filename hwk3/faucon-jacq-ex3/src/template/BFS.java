@@ -16,10 +16,13 @@ public class BFS {
 		System.out.println("Computing BFS plan. . .");
 		City currentCity = vehicle.getCurrentCity();
 		Plan plan = new Plan(currentCity);
+
+		// Create the initial state
 		State state = new State(currentCity);
-		for(Task task : tasks) {
-			state.restTasks.add(task);
-		}
+		// Add tasks for pickup and tasks for delivery
+		state.restTasks.addAll(tasks);
+		state.currentTasks.addAll(vehicle.getCurrentTasks());
+		
 		PriorityQueue<State> Q = new PriorityQueue<State>();
 		Q.offer(state);
 		HashMap<State,State> fatherState = new HashMap<State,State>();
