@@ -29,4 +29,22 @@ public class State implements Comparable<Object>{
 			return -1;
 		}
 	}
+	
+	@Override
+	public boolean equals(Object otherState) {
+		boolean a = restTasks.containsAll(((State) otherState).restTasks);
+		boolean b = restTasks.containsAll(((State) otherState).currentTasks);
+		boolean c = ((State) otherState).restTasks.containsAll(restTasks);
+		boolean d = ((State) otherState).restTasks.containsAll(restTasks);
+		boolean e = ((State) otherState).currentCity.equals(currentCity);
+		return(a && b && c && d && e);
+	}
+	
+	@Override
+	public int hashCode() {
+		int hash = 1;
+		hash = hash * 17 + restTasks.hashCode();
+		hash = hash * 31 + currentTasks.hashCode();
+		return(hash);
+	}
 }
