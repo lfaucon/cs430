@@ -30,7 +30,8 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 
 	/* the planning class */
 	Algorithm algorithm;
-
+	String algorithmName;
+	
 	@Override
 	public void setup(Topology topology, TaskDistribution td, Agent agent) {
 		this.topology = topology;
@@ -39,7 +40,7 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 
 		// initialize the planner
 		this.capacity = agent.vehicles().get(0).capacity();
-		String algorithmName = agent.readProperty("algorithm", String.class, "ASTAR");
+		this.algorithmName = agent.readProperty("algorithm", String.class, "ASTAR");
 
 		// Throws IllegalArgumentException if algorithm is unknown
 		algorithm = Algorithm.valueOf(algorithmName.toUpperCase());
@@ -48,29 +49,36 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 	}
 
 	public static State getNewState(State previous, Task pickup, Task deliver) {
-		State newState = new State(previous.currentCity);
+
+		// Create new state
+		State newState = new State(null);
 		newState.cost += previous.cost;
+		newState.g += previous.g;
 		newState.weight += previous.weight;
-		for(Task task : previous.restTasks) {
-			newState.restTasks.add(task);
-		}
-		for(Task task : previous.currentTasks) {
-			newState.currentTasks.add(task);
-		}
+
+		newState.restTasks.addAll(previous.restTasks);
+		newState.currentTasks.addAll(previous.currentTasks);
+
+		// if the action is a pickup
 		if(pickup != null) {
 			//System.out.println("pickup from "+pickup.pickupCity+" to "+pickup.deliveryCity);
 			newState.cost += previous.currentCity.distanceTo(pickup.pickupCity);
+			newState.g += previous.currentCity.distanceTo(pickup.pickupCity);
 			newState.currentCity = pickup.pickupCity;
 			newState.restTasks.remove(pickup);
 			newState.currentTasks.add(pickup);
 			newState.weight = previous.weight + pickup.weight;
 		}
+
+		// if the action is a deliver
 		if(deliver != null) {
 			//System.out.println("deliver task at "+deliver.deliveryCity);
 			newState.cost += previous.currentCity.distanceTo(deliver.deliveryCity);
+			newState.g += previous.currentCity.distanceTo(deliver.deliveryCity);
 			newState.currentCity = deliver.deliveryCity;
 			newState.currentTasks.remove(deliver);
 		}
+
 		return newState;
 	}
 
@@ -94,7 +102,14 @@ public class DeliberativeTemplate implements DeliberativeBehavior {
 			break;
 		default:
 			throw new AssertionError("Should not happen.");
-		}		
+		}
+
+		System.out.println("###################################"+
+				"\nWITH ALGORITHM "+algorithmName+
+				"\nTOTAL DISTANCE: "+plan.totalDistance()+
+				"\n###################################"
+				);
+
 		return plan;
 	}
 
