@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Stack;
 
 import logist.plan.Plan;
@@ -27,7 +28,9 @@ public class ASTAR {
 		state.currentTasks.addAll(vehicle.getCurrentTasks());
 		
 		PriorityQueue<State> Q = new PriorityQueue<State>();
+		HashMap<State,Double> H = new HashMap<State,Double>();
 		Q.offer(state);
+		H.put(state, state.cost);
 		HashMap<State,State> fatherState = new HashMap<State,State>();
 		fatherState.put(state, null);
 		HashMap<State,Action> fatherAction = new HashMap<State,Action>();
@@ -44,6 +47,8 @@ public class ASTAR {
 
 
 			state = Q.poll();
+			state.cost = H.get(state);
+			
 			// If there are no more task to pickup and no task to deliver, then we terminate
 			if(state.restTasks.isEmpty() && state.currentTasks.isEmpty()) {
 				// first goal reached necessarily the one with optimal cost
@@ -68,9 +73,7 @@ public class ASTAR {
 						State newState = DeliberativeTemplate.getNewState(state, pickup, null);
 						// g is the distance in kilometers and h is out heuristic
 						newState.cost = newState.g + h(newState, vehicle);
-						Q.offer(newState);
-						fatherState.put(newState, state);
-						fatherAction.put(newState, new Action(pickup, null));
+						offerState(Q, H, fatherState, fatherAction, new Action(pickup, null), state, newState);
 					}
 				}
 			}
@@ -91,9 +94,7 @@ public class ASTAR {
 					State newState = DeliberativeTemplate.getNewState(state, null, deliver);
 					// g is the distance in kilometers and h is out heuristic
 					newState.cost = newState.g + h(newState, vehicle);
-					Q.offer(newState);
-					fatherState.put(newState, state);
-					fatherAction.put(newState, new Action(null, deliver));
+					offerState(Q, H, fatherState, fatherAction, new Action(null, deliver), state, newState);
 				}
 			}
 		}
@@ -136,9 +137,23 @@ public class ASTAR {
 		return plan;
 	}
 	
+	private static void offerState(Queue<State> Q, HashMap<State,Double> H, HashMap<State,State> fatherState, HashMap<State,Action> fatherAction, Action action, State state, State newState) {
+		if(H.containsKey(newState)) {
+			if(H.get(newState) > newState.cost) {
+				H.put(newState, newState.cost);
+				fatherState.put(newState, state);
+				fatherAction.put(newState, action);
+			}	
+		} else {
+			Q.offer(newState);
+			H.put(newState, newState.cost);
+			fatherState.put(newState, state);
+			fatherAction.put(newState, action);
+		}
+	}
 	
 	private static double h(State state, Vehicle vehicle) {
-		System.out.println("################################\nCOMPUTING h for "+state.restTasks.size()+" remaining tasks");
+		//System.out.println("################################\nCOMPUTING h for "+state.restTasks.size()+" remaining tasks");
 		
 		// Computes h as the distance to the minumum furthest city
 		double h = -1.;
@@ -161,7 +176,7 @@ public class ASTAR {
 				h = plan.totalDistance();
 			}
 		}*/
-		System.out.println("H " + h);
+		//System.out.println("H " + h);
 		return h;
 	}
 }
