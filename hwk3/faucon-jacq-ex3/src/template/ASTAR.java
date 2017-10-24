@@ -141,11 +141,10 @@ public class ASTAR {
 		System.out.println("################################\nCOMPUTING h for "+state.restTasks.size()+" remaining tasks");
 		
 		// Computes h as the distance to the minumum furthest city
-		double h = -1.;
+		double h = 0.;
 		for(Task task: state.restTasks) {
-			if(h < state.currentCity.distanceTo(task.deliveryCity)){
-				h = state.currentCity.distanceTo(task.deliveryCity);
-			}
+			double x = state.currentCity.distanceTo(task.pickupCity) + task.pickupCity.distanceTo(task.deliveryCity);
+			if(h < x) h = x;
 		}
 		
 		// Computes h as the minimum of several random trials
