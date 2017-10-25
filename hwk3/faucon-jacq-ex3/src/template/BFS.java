@@ -40,7 +40,7 @@ public class BFS {
 		State finalOptimalState = new State(currentCity);
 		Double finalOptimalCost = 1E10;
 
-		for(int step=0; step<1e7; step++) {
+		for(int step=0; step<1e8; step++) {
 			if(step % 1e4 == 0) System.out.println("step: " + step);
 
 			if(Q.isEmpty()) {
@@ -50,6 +50,7 @@ public class BFS {
 
 
 			state = Q.poll();
+			System.out.println("Cost = " + H.get(state));
 			state.cost = H.get(state);
 			
 			// If there are no more task to pickup and no task to deliver, then we terminate
@@ -61,7 +62,6 @@ public class BFS {
 					finalOptimalState = state;
 					finalOptimalCost = state.cost;
 				}
-				continue;
 			}
 
 			boolean delivers_closer = false;
@@ -75,7 +75,7 @@ public class BFS {
 					}
 				}
 
-				if(!delivers_closer) {
+				if(true) {
 					if(vehicle.capacity()>state.weight+pickup.weight) {
 						State newState = DeliberativeTemplate.getNewState(state, pickup, null);
 						offerState(Q, H, fatherState, fatherAction, new Action(pickup, null), state, newState);
@@ -95,7 +95,7 @@ public class BFS {
 					}
 				}
 
-				if(!delivers_closer) {
+				if(true) {
 					State newState = DeliberativeTemplate.getNewState(state, null, deliver);
 					offerState(Q, H, fatherState, fatherAction, new Action(null, deliver), state, newState);
 				}
@@ -109,7 +109,6 @@ public class BFS {
 			state = finalOptimalState;
 			System.out.println("goal found with cost "+state.cost+" planification...");
 			Stack<Action> reversePlan = new Stack<Action>();
-			int i = 0;
 
 			while(state != null) {
 				if(fatherState.get(state)!=null) {

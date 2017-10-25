@@ -33,18 +33,19 @@ public class State implements Comparable<Object>{
 	@Override
 	public boolean equals(Object otherState) {
 		boolean a = restTasks.containsAll(((State) otherState).restTasks);
-		boolean b = restTasks.containsAll(((State) otherState).currentTasks);
+		boolean b = currentTasks.containsAll(((State) otherState).currentTasks);
 		boolean c = ((State) otherState).restTasks.containsAll(restTasks);
-		boolean d = ((State) otherState).restTasks.containsAll(restTasks);
+		boolean d = ((State) otherState).currentTasks.containsAll(currentTasks);
 		boolean e = ((State) otherState).currentCity.equals(currentCity);
 		return(a && b && c && d && e);
 	}
 	
 	@Override
 	public int hashCode() {
-		int hash = 1;
-		hash = hash * 17 + restTasks.hashCode();
-		hash = hash * 31 + currentTasks.hashCode();
+		int hash = 17;
+		for (Task task: restTasks) hash += task.hashCode();
+		hash *= 31;
+		for(Task task: currentTasks) hash += task.hashCode();
 		hash = hash * 13 + currentCity.hashCode();
 		return(hash);
 	}
