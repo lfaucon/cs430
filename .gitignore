@@ -32,4 +32,6 @@ hs_err_pid*
 *.aux
 *.gz
 *.jpg
-hwk2/faucon-jacq-ex2/history.xml
+
+*.history.xml
+hwk4/faucon-jacq-ex4/history.xml
