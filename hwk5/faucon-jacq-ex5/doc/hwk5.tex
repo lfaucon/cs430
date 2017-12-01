@@ -1,0 +1,61 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage[top=0.8in, bottom=0.8in, left=0.8in, right=0.8in]{geometry}
+% add other packages here
+
+% put your group number and names in the author field
+\title{\bf Exercise 5: An Auctioning Agent for the Pickup and Delivery Problem}
+\author{Group \textnumero 10: Louis Faucon, Alexis Jacq}
+
+\begin{document}
+\maketitle
+
+\section{Bidding strategy}
+% describe in details your bidding strategy. Also, focus on answering the following questions:
+% - do you consider the probability distribution of the tasks in defining your strategy? How do you speculate about the future tasks that might be auctions?
+% - how do you use the feedback from the previous auctions to derive information about the other competitors?
+% - how do you combine all the information from the probability distribution of the tasks, the history and the planner to compute bids?
+
+As we know we will have at least 10 tasks, we adopted a strategy that basically tries to obtain a maximal number of the 10 first tasks. Indeed, having several tasks at the beginning enable us to use our planner in order to reduce the cost of new tasks in auction, and so to bid low prices with positive benefices.\\
+\\
+Obtaining firsts tasks requires to bid low prices, which have as an effect to make negative benefices. We then hope to use our planner in order to quickly compensate this deficit. In order to safely bid these negative-benefice low prices, we roughly estimate the average cost $\overline{\textit{Cost}}(N_T)$ of one task given $N_T$ tasks in plan. The idea is that biding $\overline{\textit{Cost}}(N_T)$ $N_T$ times should bring null benefices in average. So, bidding $\overline{\textit{Cost}}(10)$ is quite safe for the 10 first auctions. But still not low enough to guaranty winning enough tasks. We hence take a risk with $\overline{\textit{Cost}}(20)$:
+\[B_s = \overline{\textit{Cost}}(20) = \frac{1}{N_s}\sum\limits_{N_s}\textit{Cost}(P_{20})\]
+where $P_{20}$ is a plan containing 20 random tasks, optimised with our planner's heuristic. Bidding $B_s$ is our \textit{starting} strategy.\\
+\\
+Then, at each auction of task $T$, we assume this is the last auction and we bid a marginal price $B_m$ given our plan $P_\textit{own}$ and the estimated plan of the adversary $P_\textit{adversary}$, plus a constant low margin $B_p>0$ which ensure our positive benefices:
+\[B_\textit{m} = \frac{C_m(T\vert P_\textit{own}) - C_m(T\vert P_\textit{adversary})}{2} + B_p\]
+where $C_m(T\vert P)$ is the marginal cost for a task $T$ with a plan $P$:
+\[C_m(T\vert P) = \max(\textit{Cost}(P\cap T) - \textit{Cost}(P), 0)\]
+We estimate $C_m(T\vert P_\textit{adversary})$ as an average over $N_a$ possible adversary's plan optimized with our own planner's heuristic. Bidding $B_m$ is our \textit{marginal} strategy. In fact, as the game can end after only 10 tasks or as we may want to continue bidding in deficit if we don't win enough tasks, we don't use $B_s$ 10 times and then $B_m$ till the end, but we smoothed this transition by bidding:
+\[B_\gamma = (1-\gamma)B_s + \gamma B_m\]
+with: 
+\[\gamma = \frac{1}{1+\exp(\frac{10-i}{2})}\]
+$i$ being the number of realised auctions. 
+
+\section{Results}
+% in this section, you describe several results from the experiments with your auctioning agent
+
+\subsection{Experiment 1: Comparisons with dummy agents}
+% in this experiment you observe how the results depends on the number of tasks auctioned. You compare with some dummy agents and potentially several versions of your agent (with different internal parameter values). 
+
+\subsubsection{Setting and Observations}
+% you describe how you perform the experiment, the environment and description of the agents you compare with
+We compared our agent to three different dummy agents:
+\begin{itemize}
+\item \verb|Uniform| always bids the same value fixed to be 750
+\item \verb|Random| bids a random value chosen uniformly between 500 and 1500
+\end{itemize}
+We used the default parameters from \verb|auction.xml| with random seed \verb|123456| and either 10 or 25 tasks. Our agent ended with higher gain on all 4 cases. 
+
+\subsection{Experiment 2}
+% other experiments you would like to present (for example, varying the internal parameter values)
+
+\subsubsection{Setting and Observations}
+
+We compare it to another dummy agent \verb|Marginal| which bids exactly the marginal cost of the available task. Our agent loses for 10 available tasks, but wins for 25 available tasks. This is due to the fact that our agent plans too long ahead in the future. If we reduce the parameter for evaluating the average cost of tasks from 20 to 10, our agent performs better on the short sequence of tasks and beats the \verb|Marginal| agent.  
+
+
+
+\end{document}
